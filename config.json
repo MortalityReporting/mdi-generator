@@ -1,0 +1,28 @@
+{
+    "recordCount": 1,
+    "startDate": "01-01-2022",
+    "days": 1,
+    "bundleType": "MDI",
+    "subject": {
+        "ageMin": 18,
+        "ageMax": 76,
+        "genderMFOU": [
+            47,
+            47,
+            1,
+            5
+        ]
+    },
+    "causeOfDeathList": [
+        "blow to the head",
+        "stolen kidney",
+        "some sort of fungus",
+        "unexploded ordinance",
+        "Fred",
+        "scared watching horror movies",
+        "mercury poisoning",
+        "miner's lung",
+        "premature autopsy",
+        "alien abduction"
+    ]
+}

@@ -1,0 +1,1 @@
+{"resourceType":"Bundle","id":"11b852f7-bdda-4b73-9de6-1fd6b0e6b6cb","meta":{"profile":["http://hl7.org/fhir/us/mdi/StructureDefinition/Bundle-document-mdi-to-edrs"]},"identifier":{"system":"urn:ietf:rfc:3986","value":"4bd449fa-b5fd-472a-965b-71dbde7f9212"},"type":"document"}
