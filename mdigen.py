@@ -1,12 +1,14 @@
 from src.profiles.bundleDocumentMDItoEDRS import generateBundleDocumentMDItoEDRS, addEntry, addEntries, insertComposition
 from src.profiles.observationCauseOfDeathCondition import generateObservationCauseOfDeathCondition
+from src.profiles.observationConditionContributingToDeath import generateObservationConditionContributingToDeath
+from src.profiles.observationDeathInjuryEventOccurredAtWork import generateObservationDeathInjuryEventOccurredAtWork
+from src.profiles.observationTobaccoUseContributedToDeath import generateObservationTobaccoUseContributedToDeath
 from src.profiles.listCauseOfDeathPathway import generateListCauseOfDeathPathway
 from src.helpers.subject import generateSubject
 from src.helpers.uscorepractitioner import getUsCorePractitioner
-from src.profiles.compositionMDItoEDRS import addSection, generateCompositionMDItoEDRS
+from src.profiles.compositionMDItoEDRS import addSection, generateCompositionMDItoEDRS, generateCompositionSection
 from fhirgenerator.helpers.helpers import default
 from src.cannonicalUrls import CodeSystem_mdi_codes
-from src.helpers.section import generateCompositionSection
 import orjson
 import os
 import json
@@ -16,6 +18,7 @@ def main():
     config = openConfig()
     record_count = config["recordCount"]
     start_date = config["startDate"]
+    days = config["days"]
 
     print(f"Generating {record_count} MDI Record(s)...")
 
@@ -35,34 +38,64 @@ def main():
         composition = generateCompositionMDItoEDRS(subject_id, practitioner_id, start_date)
         
         # Step 4 - For Each Section of Composition, Generate Resources
-        # Step 4a
-        circumstancesSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "circumstances"}, [])
+        ## Step 4a - Demographics (Occupation History)
+        ## Step 4b - Circumstances (Death Location, Work Injury, Tobacco Use Contributed To Death, Decedent Pregnancy)
+        observationDeathInjuryEventOccurredAtWork = generateObservationDeathInjuryEventOccurredAtWork(subject_id, practitioner_id, start_date, days)
+        observationTobaccoUseContributedToDeath = generateObservationTobaccoUseContributedToDeath(subject_id, practitioner_id, start_date, days)
+        circumstancesSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "circumstances"},
+            [
+                observationDeathInjuryEventOccurredAtWork,
+                observationTobaccoUseContributedToDeath
+            ])
         composition = addSection(composition, circumstancesSection)
       
-        # Step 4b
+        ## Step 4c - Juridiction (Death Date)
         jurisdictionSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "jurisdiction"}, [])
         composition = addSection(composition, jurisdictionSection)
 
-        # Step 4c - Cause and Manner
+        # Step 4d - Cause and Manner (Cause of Death Pathway, Condition Contributing to Death, Manner of Death, How Death Injury Occurred)
         causeCount = int(random.randint(1, 5))
         observationCauseOfDeathConditionList = []
         for x in range(causeCount):
             observationCauseOfDeathConditionList.append(generateObservationCauseOfDeathCondition(
-                config["causeOfDeathList"], subject_id, practitioner_id, start_date, 1))
+                config["causeOfDeathList"], subject_id, practitioner_id, start_date, days))
         causeOfDeathPathway = generateListCauseOfDeathPathway(observationCauseOfDeathConditionList, subject_id, practitioner_id)
-        causeMannerSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "cause-manner"}, [causeOfDeathPathway])
+
+        contributingCount = int(random.randint(1, 5))
+        observationConditionContributingToDeathList = []
+        for x in range (contributingCount):
+            observationConditionContributingToDeathList.append(generateObservationConditionContributingToDeath(
+                config["contributingConditionList"], subject_id, practitioner_id, start_date, days))
+
+        causeMannerSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "cause-manner"}, [causeOfDeathPathway] + observationConditionContributingToDeathList)
         composition = addSection(composition, causeMannerSection)
 
-        # Step 4d - Medical History
+        # Step 4e - Medical History (US Core Condition)
         medicalHistorySection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "medical-history"}, [])
         composition = addSection(composition, medicalHistorySection)
 
-        # Insert Composition to document bundle, append each other resource.
+        # Step 5 - Add Resource to Bundle
+        ## Core Resources
         bundle = insertComposition(bundle, composition)
-        bundle = addEntry(bundle, subject)
-        bundle = addEntry(bundle, practitioner)
+        bundle = addEntries(bundle, [subject, practitioner])
+        
+        ## Demographics Resources
+        ## Circumstances Resources
+        bundle = addEntries(bundle, [
+            observationDeathInjuryEventOccurredAtWork,
+            observationTobaccoUseContributedToDeath
+            ])
+
+        ## Jurisdiction Resources
+        ## Cause-Manner Resources
         bundle = addEntries(bundle, observationCauseOfDeathConditionList)
         bundle = addEntry(bundle, causeOfDeathPathway)
+        bundle = addEntries(bundle, observationConditionContributingToDeathList)
+
+        ## Medical History Resources
+        ## Exam-Autopsy Resources
+        ## Narratives Resources
+
 
         subject_name = getSubjectName(subject)
         writeFile(bundle, subject_name)
