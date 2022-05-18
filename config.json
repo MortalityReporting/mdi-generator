@@ -38,6 +38,16 @@
         "future curse",
         "too many vitamins",
         "just generally not likable"
+    ],
+    "howDeathInjuryOccurredList": [
+        "was being haunted",
+        "ingested all sorts of stuff",
+        "wind surfing",
+        "regular surfing (not wind)",
+        "apple picking",
+        "attended an overly enthusiastic murder mystery party",
+        "being a jerk to Fred",
+        "attending a talk show taping"
     ]
 
 }

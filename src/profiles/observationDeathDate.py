@@ -3,12 +3,14 @@ from fhir.resources.observation import Observation
 from src.cannonicalUrls import observation_DeathDate
 
 
-def generateObservationDate(config: dict, patient_id: str, performer_id: str, start_date: str, days: int) -> dict:
-    resource = {}
+def generateObservationDeathDate(config: dict, patient_id: str, performer_id: str, start_date: str, days: int) -> dict:
+    fixed_code = { "system": "http://loinc.org", "code": "11374-6", "display": "Injury incident description Narrative" }
 
-
-    
-
+    resource_detail = {}
+    resource_detail["codes"] = [fixed_code]
+    resource_detail["profile"] = [observation_DeathDate]
+    resource = generateObservation(resource_detail, patient_id, start_date, days)
+    resource["performer"] = [ {"reference": f'Practitioner/{performer_id}'} ]
 
     resource = Observation(**resource).dict()
     return resource

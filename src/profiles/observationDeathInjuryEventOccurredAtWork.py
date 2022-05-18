@@ -17,8 +17,5 @@ def generateObservationDeathInjuryEventOccurredAtWork(patient_id: str, performer
     resource = generateObservation(resource_detail, patient_id, start_date, days)
     resource["performer"] = [ {"reference": f'Practitioner/{performer_id}'} ]
 
-    
-
-
     resource = Observation(**resource).dict()
     return resource

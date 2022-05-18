@@ -2,6 +2,9 @@ from src.profiles.bundleDocumentMDItoEDRS import generateBundleDocumentMDItoEDRS
 from src.profiles.observationCauseOfDeathCondition import generateObservationCauseOfDeathCondition
 from src.profiles.observationConditionContributingToDeath import generateObservationConditionContributingToDeath
 from src.profiles.observationDeathInjuryEventOccurredAtWork import generateObservationDeathInjuryEventOccurredAtWork
+from src.profiles.observationDecedentPregnancy import generateObservationDecedentPregnancy
+from src.profiles.observationHowDeathInjuryOccurred import generateObservationHowDeathInjuryOccurred
+from src.profiles.observationMannerOfDeath import generateObservationMannerOfDeath
 from src.profiles.observationTobaccoUseContributedToDeath import generateObservationTobaccoUseContributedToDeath
 from src.profiles.listCauseOfDeathPathway import generateListCauseOfDeathPathway
 from src.helpers.subject import generateSubject
@@ -40,16 +43,21 @@ def main():
         # Step 4 - For Each Section of Composition, Generate Resources
         ## Step 4a - Demographics (Occupation History)
         ## Step 4b - Circumstances (Death Location, Work Injury, Tobacco Use Contributed To Death, Decedent Pregnancy)
+        ### TODO: Death Location (US Core Location)
         observationDeathInjuryEventOccurredAtWork = generateObservationDeathInjuryEventOccurredAtWork(subject_id, practitioner_id, start_date, days)
         observationTobaccoUseContributedToDeath = generateObservationTobaccoUseContributedToDeath(subject_id, practitioner_id, start_date, days)
+        observationDecedentPregancy = generateObservationDecedentPregnancy(subject_id, practitioner_id, start_date, days)
+
         circumstancesSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "circumstances"},
             [
                 observationDeathInjuryEventOccurredAtWork,
-                observationTobaccoUseContributedToDeath
+                observationTobaccoUseContributedToDeath,
+                observationDecedentPregancy
             ])
         composition = addSection(composition, circumstancesSection)
       
         ## Step 4c - Juridiction (Death Date)
+        ### TODO: Death Date
         jurisdictionSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "jurisdiction"}, [])
         composition = addSection(composition, jurisdictionSection)
 
@@ -66,8 +74,12 @@ def main():
         for x in range (contributingCount):
             observationConditionContributingToDeathList.append(generateObservationConditionContributingToDeath(
                 config["contributingConditionList"], subject_id, practitioner_id, start_date, days))
+        
+        observationMannerOfDeath = generateObservationMannerOfDeath(subject_id, practitioner_id, start_date, days)
+        observationHowDeathInjuryEventOccurred = generateObservationHowDeathInjuryOccurred(config["howDeathInjuryOccurredList"], subject_id, practitioner_id, start_date, days)
 
-        causeMannerSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "cause-manner"}, [causeOfDeathPathway] + observationConditionContributingToDeathList)
+        causeMannerSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "cause-manner"},
+            [causeOfDeathPathway, observationMannerOfDeath, observationHowDeathInjuryEventOccurred] + observationConditionContributingToDeathList)
         composition = addSection(composition, causeMannerSection)
 
         # Step 4e - Medical History (US Core Condition)
@@ -83,7 +95,8 @@ def main():
         ## Circumstances Resources
         bundle = addEntries(bundle, [
             observationDeathInjuryEventOccurredAtWork,
-            observationTobaccoUseContributedToDeath
+            observationTobaccoUseContributedToDeath,
+            observationDecedentPregancy
             ])
 
         ## Jurisdiction Resources
@@ -91,6 +104,7 @@ def main():
         bundle = addEntries(bundle, observationCauseOfDeathConditionList)
         bundle = addEntry(bundle, causeOfDeathPathway)
         bundle = addEntries(bundle, observationConditionContributingToDeathList)
+        bundle = addEntries(bundle, [observationMannerOfDeath, observationHowDeathInjuryEventOccurred])
 
         ## Medical History Resources
         ## Exam-Autopsy Resources

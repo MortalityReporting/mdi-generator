@@ -1,4 +1,5 @@
 from src.cannonicalUrls import composition_MDItoEDRS, loinc
+from src.extensions.trackingNumber import generateTrackingNumberExtension
 from src.helpers.unique_identifier import generateUniqueIdentifier
 from fhir.resources.composition import Composition, CompositionSection
 from fhir.resources.coding import Coding
@@ -13,6 +14,9 @@ def generateCompositionMDItoEDRS(subject_id: str, practitioner_id: str, start_da
     composition["meta"] = {}
     composition["meta"]["profile"] = [ composition_MDItoEDRS ]
     composition["status"] = "final"
+
+    composition["extension"] = []
+    composition["extension"].append(generateTrackingNumberExtension())
     
     composition["identifier"] = generateUniqueIdentifier()
     composition["subject"] = { "reference": f"Patient/{subject_id}"}
@@ -28,8 +32,6 @@ def generateCompositionMDItoEDRS(subject_id: str, practitioner_id: str, start_da
     composition = Composition(**composition).dict()
     return composition
 
-def generateTrackingNumberExtension() -> dict:
-    return {}
 
 def generateCompositionSection(coding: Coding, resources: list):
     section = {}
