@@ -1,14 +1,12 @@
 from fhirgenerator.resources.r4.observation import generateObservation
 from fhir.resources.observation import Observation
-from src.cannonicalUrls import observation_TobaccoUseContributedToDeath
-
+from src.cannonicalUrls import observation_TobaccoUseContributedToDeath as cannonical_profile_url
+from src.fixedCodes import code_TobaccoUseContributedToDeath as fixed_code
 
 def generateObservationTobaccoUseContributedToDeath(patient_id: str, performer_id: str, start_date: str, days: int) -> dict:
-    fixed_code = { "system": "http://loinc.org", "code": "69443-0", "display": "Did tobacco use contribute to death" }
-
     resource_detail = {}
     resource_detail["codes"] = [fixed_code]
-    resource_detail["profile"] = [observation_TobaccoUseContributedToDeath]
+    resource_detail["profile"] = [cannonical_profile_url]
     resource_detail["enumSetList"] = [
         { "coding": [ { "system": "http://snomed.info/sct", "code": "373066001", "display": "Yes" } ]},
         { "coding": [ { "system": "http://snomed.info/sct", "code": "373067005", "display": "No" } ]},

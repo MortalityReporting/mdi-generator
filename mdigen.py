@@ -7,8 +7,10 @@ from src.profiles.observationHowDeathInjuryOccurred import generateObservationHo
 from src.profiles.observationMannerOfDeath import generateObservationMannerOfDeath
 from src.profiles.observationTobaccoUseContributedToDeath import generateObservationTobaccoUseContributedToDeath
 from src.profiles.listCauseOfDeathPathway import generateListCauseOfDeathPathway
+from src.profiles.observationDeathDate import generateObservationDeathDate
 from src.helpers.subject import generateSubject
 from src.helpers.uscorepractitioner import getUsCorePractitioner
+from src.helpers.location import generateLocation
 from src.profiles.compositionMDItoEDRS import addSection, generateCompositionMDItoEDRS, generateCompositionSection
 from fhirgenerator.helpers.helpers import default
 from src.cannonicalUrls import CodeSystem_mdi_codes
@@ -44,12 +46,16 @@ def main():
         ## Step 4a - Demographics (Occupation History)
         ## Step 4b - Circumstances (Death Location, Work Injury, Tobacco Use Contributed To Death, Decedent Pregnancy)
         ### TODO: Death Location (US Core Location)
+        deathLocation = generateLocation() # TODO: Link to US Core Death Date
+        location_id = deathLocation["id"]
+
         observationDeathInjuryEventOccurredAtWork = generateObservationDeathInjuryEventOccurredAtWork(subject_id, practitioner_id, start_date, days)
         observationTobaccoUseContributedToDeath = generateObservationTobaccoUseContributedToDeath(subject_id, practitioner_id, start_date, days)
         observationDecedentPregancy = generateObservationDecedentPregnancy(subject_id, practitioner_id, start_date, days)
 
         circumstancesSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "circumstances"},
             [
+                deathLocation,
                 observationDeathInjuryEventOccurredAtWork,
                 observationTobaccoUseContributedToDeath,
                 observationDecedentPregancy
@@ -57,8 +63,8 @@ def main():
         composition = addSection(composition, circumstancesSection)
       
         ## Step 4c - Juridiction (Death Date)
-        ### TODO: Death Date
-        jurisdictionSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "jurisdiction"}, [])
+        observationDeathDate = generateObservationDeathDate(config, location_id, subject_id, practitioner_id, start_date, days)
+        jurisdictionSection = generateCompositionSection({"system": CodeSystem_mdi_codes, "code": "jurisdiction"}, [observationDeathDate])
         composition = addSection(composition, jurisdictionSection)
 
         # Step 4d - Cause and Manner (Cause of Death Pathway, Condition Contributing to Death, Manner of Death, How Death Injury Occurred)
@@ -94,12 +100,15 @@ def main():
         ## Demographics Resources
         ## Circumstances Resources
         bundle = addEntries(bundle, [
+            deathLocation,
             observationDeathInjuryEventOccurredAtWork,
             observationTobaccoUseContributedToDeath,
             observationDecedentPregancy
             ])
 
         ## Jurisdiction Resources
+        bundle = addEntry(bundle, observationDeathDate)
+        
         ## Cause-Manner Resources
         bundle = addEntries(bundle, observationCauseOfDeathConditionList)
         bundle = addEntry(bundle, causeOfDeathPathway)

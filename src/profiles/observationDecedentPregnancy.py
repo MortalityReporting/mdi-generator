@@ -1,14 +1,12 @@
 from fhirgenerator.resources.r4.observation import generateObservation
 from fhir.resources.observation import Observation
-from src.cannonicalUrls import observation_DecedentPregnancy
-
+from src.cannonicalUrls import observation_DecedentPregnancy as cannonical_profile_url
+from src.fixedCodes import code_DecedentPregnancy as fixed_code
 
 def generateObservationDecedentPregnancy(patient_id: str, performer_id: str, start_date: str, days: int) -> dict:
-    fixed_code = { "system": "http://loinc.org", "code": "69442-2", "display": "Timing of recent pregnancy in relation to death" }
-
     resource_detail = {}
     resource_detail["codes"] = [fixed_code]
-    resource_detail["profile"] = [observation_DecedentPregnancy]
+    resource_detail["profile"] = [cannonical_profile_url]
     resource_detail["enumSetList"] = [
         { "coding": [ { "system": "http://hl7.org/fhir/us/mdi/CodeSystem/CodeSystem-death-pregnancy-status", "code": "1", "display": "Not pregnant within past year" } ]},
         { "coding": [ { "system": "http://hl7.org/fhir/us/mdi/CodeSystem/CodeSystem-death-pregnancy-status", "code": "2", "display": "Pregnant at time of death" } ]},

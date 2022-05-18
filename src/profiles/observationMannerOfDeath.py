@@ -1,14 +1,13 @@
 from fhirgenerator.resources.r4.observation import generateObservation
 from fhir.resources.observation import Observation
-from src.cannonicalUrls import observation_MannerOfDeath
+from src.cannonicalUrls import observation_MannerOfDeath as cannonical_profile_url
+from src.fixedCodes import code_MannerOfDeath as fixed_code
 
 
 def generateObservationMannerOfDeath(patient_id: str, performer_id: str, start_date: str, days: int) -> dict:
-    fixed_code = { "system": "http://loinc.org", "code": "69449-7", "display": "Manner of death" }
-
     resource_detail = {}
     resource_detail["codes"] = [fixed_code]
-    resource_detail["profile"] = [observation_MannerOfDeath]
+    resource_detail["profile"] = [cannonical_profile_url]
     resource_detail["enumSetList"] = [
         { "coding": [ { "system": "http://snomed.info/sct", "code": "38605008", "display": "Nautral death (event)" } ]},
         { "coding": [ { "system": "http://snomed.info/sct", "code": "7878000", "display": "Accidental death (event)" } ]},
