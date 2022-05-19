@@ -1,7 +1,7 @@
 # Profiles
 code_CauseOfDeathCondition = { "system": "http://loinc.org", "code": "69453-9", "display": "Cause of death" }
 code_ConditionContributingToDeath = { "system": "http://loinc.org", "code": "69441-4", "display": "Other significant causes or conditions of death" }
-code_DeathDate = { "system": "http://loinc.org", "code": "81956-5", "display": "Date and time of death" }
+code_DeathDate = { "system": "http://loinc.org", "code": "81956-5", "display": "Date and time of death [TimeStamp]" }
 code_DeathInjuryEventOccurredAtWork = { "system": "http://loinc.org", "code": "69444-8", "display": "Did death result from injury at work" }
 code_DecedentPregnancy = { "system": "http://loinc.org", "code": "69442-2", "display": "Timing of recent pregnancy in relation to death" }
 code_HowDeathInjuryOccurred = { "system": "http://loinc.org", "code": "11374-6", "display": "Injury incident description Narrative" }

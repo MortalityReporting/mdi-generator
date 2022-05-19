@@ -23,7 +23,7 @@ def main():
     config = openConfig()
     record_count = config["recordCount"]
     start_date = config["startDate"]
-    days = config["days"]
+    days = 1
 
     print(f"Generating {record_count} MDI Record(s)...")
 
@@ -108,7 +108,7 @@ def main():
 
         ## Jurisdiction Resources
         bundle = addEntry(bundle, observationDeathDate)
-        
+
         ## Cause-Manner Resources
         bundle = addEntries(bundle, observationCauseOfDeathConditionList)
         bundle = addEntry(bundle, causeOfDeathPathway)

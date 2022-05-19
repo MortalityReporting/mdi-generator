@@ -12,6 +12,10 @@ observation_MannerOfDeath = "http://hl7.org/fhir/us/mdi/StructureDefinition/Obse
 observation_DecedentPregnancy = "http://hl7.org/fhir/us/mdi/StructureDefinition/Observation-decedent-pregnancy"
 observation_TobaccoUseContributedToDeath = "http://hl7.org/fhir/us/mdi/StructureDefinition/Observation-tobacco-use-contributed-to-death"
 
+# MDI Extensions
+extension_ObservationLocation = "http://hl7.org/fhir/us/mdi/StructureDefinition/Extension-observation-location"
+extension_TrackingNumber = "http://hl7.org/fhir/us/mdi/StructureDefinition/Extension-tracking-number"
+
 # Code Systems
 loinc = "http://loinc.org"
 CodeSystem_mdi_codes = "http://hl7.org/fhir/us/mdi/CodeSystem/CodeSystem-mdi-codes"

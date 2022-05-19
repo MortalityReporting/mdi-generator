@@ -1,9 +1,10 @@
 from fhir.resources.extension import Extension
 import uuid
+from src.cannonicalUrls import extension_TrackingNumber as cannonical_url
 
 def generateTrackingNumberExtension() -> dict:
     extension = {
-      "url" : "http://hl7.org/fhir/us/mdi/StructureDefinition/Extension-tracking-number",
+      "url" : cannonical_url,
       "valueIdentifier" : {
         "type" : {
           "coding" : [
